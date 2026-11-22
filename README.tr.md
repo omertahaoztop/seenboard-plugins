@@ -64,6 +64,7 @@ Profil ayarları:
 |---|---|
 | `url` | Redmine adresi, örneğin `https://redmine.example.com` |
 | `key_file` | API anahtarının durduğu dosya, izni `0600` olmalı |
+| `exclude_statuses` | İsteğe bağlı, gizlenecek durum adları, örneğin `["Çözüm Sağlandı"]`. Redmine bazı durumları açık saydığı için bu ayar olmadan onlar da listeye girer. Ad birebir eşleşmeli |
 
 ## zulip
 

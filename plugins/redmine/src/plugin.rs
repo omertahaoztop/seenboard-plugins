@@ -14,6 +14,8 @@ const DUE_HOUR: u32 = 17;
 struct Config {
     url: String,
     key_file: String,
+    #[serde(default)]
+    exclude_statuses: Vec<String>,
 }
 
 #[derive(Default)]
@@ -24,6 +26,7 @@ pub struct Redmine {
 struct Target {
     client: Client,
     base: String,
+    excluded: Vec<String>,
 }
 
 impl Plugin for Redmine {
@@ -60,7 +63,11 @@ impl Plugin for Redmine {
         })?;
         let client = Client::new(&base, &key)?;
         client.current_user()?;
-        self.target = Some(Target { client, base });
+        self.target = Some(Target {
+            client,
+            base,
+            excluded: cfg.exclude_statuses,
+        });
         Ok(())
     }
 
@@ -71,6 +78,12 @@ impl Plugin for Redmine {
             .client
             .issues()?
             .iter()
+            .filter(|issue| {
+                issue
+                    .status
+                    .as_ref()
+                    .is_none_or(|status| !target.excluded.contains(&status.name))
+            })
             .map(|issue| to_item(issue, &target.base, today))
             .collect())
     }

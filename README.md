@@ -64,6 +64,7 @@ Profile settings:
 |---|---|
 | `url` | Redmine address, for example `https://redmine.example.com` |
 | `key_file` | File holding the API key, mode must be `0600` |
+| `exclude_statuses` | Optional list of status names to hide, for example `["Resolved"]`. Redmine counts some statuses as open, so they show up otherwise. Names must match exactly |
 
 ## zulip
 

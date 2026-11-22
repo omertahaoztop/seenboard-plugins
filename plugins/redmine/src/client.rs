@@ -17,12 +17,20 @@ pub struct Priority {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct Status {
+    #[serde(default, deserialize_with = "null_as_default")]
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct Issue {
     pub id: u64,
     #[serde(default, deserialize_with = "null_as_default")]
     pub subject: String,
     #[serde(default)]
     pub priority: Option<Priority>,
+    #[serde(default)]
+    pub status: Option<Status>,
     #[serde(default)]
     pub due_date: Option<String>,
 }
