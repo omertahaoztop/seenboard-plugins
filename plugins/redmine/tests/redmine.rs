@@ -147,6 +147,36 @@ fn duplicate_across_pages_counts_once() {
 }
 
 #[test]
+fn excluded_statuses_are_left_out_of_the_list() {
+    let mut server = mockito::Server::new();
+    let _user = current_user(&mut server);
+    let file = keyfile(KEY);
+    let mut cfg = config(&server, &file);
+    cfg["exclude_statuses"] = json!(["Çözüm Sağlandı"]);
+    let mut plugin = Redmine::default();
+    plugin.configure(cfg).unwrap();
+    let with_status = |id: u64, status: &str| {
+        let mut issue = issue_json(id);
+        issue["status"] = json!({"id": id, "name": status});
+        issue
+    };
+    page(
+        &mut server,
+        0,
+        vec![
+            with_status(1, "Yeni"),
+            with_status(2, "Çözüm Sağlandı"),
+            issue_json(3),
+            with_status(4, "çözüm sağlandı"),
+        ],
+        4,
+    );
+    let items = list(&mut plugin).unwrap();
+    let ids: Vec<_> = items.iter().map(|i| i.id.as_str()).collect();
+    assert_eq!(ids, ["1", "3", "4"]);
+}
+
+#[test]
 fn http_error_names_the_status_and_reason_only() {
     let cases = [
         (400, "Redmine 400: invalid request"),
